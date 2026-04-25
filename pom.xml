@@ -7,6 +7,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>paqueteria-Core</module>
+        <module>paqueteria-conecction</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

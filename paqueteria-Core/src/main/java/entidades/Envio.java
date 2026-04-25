@@ -18,6 +18,7 @@ public class Envio {
     private LocalDate fecha_envio;
     private EstadoEnvio estado;
     private List<Paquete> paquetes;
+    private List<RegistroEnvio> historial_envio;
     private String nombre_destinatario;
     private String direccion_destino;
     private String telefono_destinatario;
