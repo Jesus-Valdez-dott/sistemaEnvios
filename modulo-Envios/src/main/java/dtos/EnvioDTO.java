@@ -2,28 +2,63 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package entidades;
+package dtos;
 
+import Enums.EstadoEnvio;
+import entidades.Paquete;
+import entidades.RegistroEnvio;
 import java.time.LocalDate;
 import java.util.List;
-import Enums.EstadoEnvio;
 
 /**
  *
  * @author Jesús
  */
-public class Envio {
+public class EnvioDTO {
     private String id_envio;
     private String codigo_rastreo;
     private LocalDate fecha_envio;
     private EstadoEnvio estado;
-    private List<Paquete> paquetes;
-    private List<RegistroEnvio> historial_envio;
+    private List<PaqueteDTO> paquetes;
+    private List<RegistroEnvioDTO> historial_envio;
     private String nombre_destinatario;
     private String direccion_destino;
     private String telefono_destinatario;
     private LocalDate fecha_entrega;
     private String id_empleado_entrega;
+
+    public EnvioDTO() {
+    }
+
+    public EnvioDTO(String id_envio, String codigo_rastreo, LocalDate fecha_envio, EstadoEnvio estado, List<PaqueteDTO> paquetes, List<RegistroEnvioDTO> historial_envio, String nombre_destinatario, String direccion_destino, String telefono_destinatario, LocalDate fecha_entrega, String id_empleado_entrega) {
+        this.id_envio = id_envio;
+        this.codigo_rastreo = codigo_rastreo;
+        this.fecha_envio = fecha_envio;
+        this.estado = estado;
+        this.paquetes = paquetes;
+        this.historial_envio = historial_envio;
+        this.nombre_destinatario = nombre_destinatario;
+        this.direccion_destino = direccion_destino;
+        this.telefono_destinatario = telefono_destinatario;
+        this.fecha_entrega = fecha_entrega;
+        this.id_empleado_entrega = id_empleado_entrega;
+    }
+
+    public List<PaqueteDTO> getPaquetes() {
+        return paquetes;
+    }
+
+    public void setPaquetes(List<PaqueteDTO> paquetes) {
+        this.paquetes = paquetes;
+    }
+
+    public List<RegistroEnvioDTO> getHistorial_envio() {
+        return historial_envio;
+    }
+
+    public void setHistorial_envio(List<RegistroEnvioDTO> historial_envio) {
+        this.historial_envio = historial_envio;
+    }
 
     public String getId_envio() {
         return id_envio;
@@ -55,22 +90,6 @@ public class Envio {
 
     public void setEstado(EstadoEnvio estado) {
         this.estado = estado;
-    }
-
-    public List<Paquete> getPaquetes() {
-        return paquetes;
-    }
-
-    public void setPaquetes(List<Paquete> paquetes) {
-        this.paquetes = paquetes;
-    }
-
-    public List<RegistroEnvio> getHistorial_envio() {
-        return historial_envio;
-    }
-
-    public void setHistorial_envio(List<RegistroEnvio> historial_envio) {
-        this.historial_envio = historial_envio;
     }
 
     public String getNombre_destinatario() {
@@ -112,7 +131,6 @@ public class Envio {
     public void setId_empleado_entrega(String id_empleado_entrega) {
         this.id_empleado_entrega = id_empleado_entrega;
     }
-    
     
     
 }

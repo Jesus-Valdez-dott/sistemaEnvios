@@ -2,19 +2,31 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package entidades;
+package dtos;
 
 /**
  *
  * @author Jesús
  */
-public class Paquete {
+public class PaqueteDTO {
     private String id_paquete;
     private double alto;
     private double largo;
     private double ancho;
     private double peso;
     private String descripcion;
+
+    public PaqueteDTO() {
+    }
+
+    public PaqueteDTO(String id_paquete, double alto, double largo, double ancho, double peso, String descripcion) {
+        this.id_paquete = id_paquete;
+        this.alto = alto;
+        this.largo = largo;
+        this.ancho = ancho;
+        this.peso = peso;
+        this.descripcion = descripcion;
+    }
 
     public String getId_paquete() {
         return id_paquete;
@@ -63,4 +75,6 @@ public class Paquete {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    
+    
 }
