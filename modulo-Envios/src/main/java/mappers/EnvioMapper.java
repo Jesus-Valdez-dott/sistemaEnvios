@@ -13,6 +13,7 @@ import entidades.RegistroEnvio;
 import entidades.Paquete;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 
 /**
@@ -25,70 +26,56 @@ public class EnvioMapper {
         if (dto == null) return null;
 
         Envio envio = new Envio();
+        // El ID solo se setea si no es nuevo (para actualizaciones)
+        if (dto.getId_envio() != null) envio.setId_envio(dto.getId_envio());
+        
         envio.setCodigo_rastreo(dto.getCodigo_rastreo());
         envio.setNombre_destinatario(dto.getNombre_destinatario());
         envio.setDireccion_destino(dto.getDireccion_destino());
+        envio.setTelefono_destinatario(dto.getTelefono_destinatario()); // Agregado
         envio.setFecha_envio(dto.getFecha_envio());
-        
-        //Mapeo de la lista de paquetes
-        List<Paquete> paquetes = new ArrayList<>();
+        envio.setEstado(dto.getEstado() != null ? dto.getEstado() : EstadoEnvio.REGISTRADO);
+
+        // Mapeo de paquetes
         if (dto.getPaquetes() != null) {
-            for (PaqueteDTO pDto : dto.getPaquetes()) {
+            envio.setPaquetes(dto.getPaquetes().stream().map(pDto -> {
                 Paquete p = new Paquete();
                 p.setAlto(pDto.getAlto());
                 p.setAncho(pDto.getAncho());
                 p.setLargo(pDto.getLargo());
                 p.setPeso(pDto.getPeso());
                 p.setDescripcion(pDto.getDescripcion());
-                paquetes.add(p);
-            }
+                return p;
+            }).collect(Collectors.toList()));
         }
-        envio.setPaquetes(paquetes);
-
-        //Por defecto un envío nuevo entra como Registrado
-        envio.setEstado(EstadoEnvio.REGISTRADO);
-
         return envio;
     }
 
-    //Convierte de Entidad a DTO
     public static EnvioDTO toDTO(Envio entity) {
         if (entity == null) return null;
 
         EnvioDTO dto = new EnvioDTO();
-        dto.setId_envio(entity.getId_envio()); //Aqui se convierte el ObjectId a String
+        dto.setId_envio(entity.getId_envio());
         dto.setCodigo_rastreo(entity.getCodigo_rastreo());
         dto.setNombre_destinatario(entity.getNombre_destinatario());
         dto.setDireccion_destino(entity.getDireccion_destino());
+        dto.setTelefono_destinatario(entity.getTelefono_destinatario());
         dto.setFecha_envio(entity.getFecha_envio());
         dto.setEstado(entity.getEstado());
         
-        List<PaqueteDTO> paquetesDTO = new ArrayList<>();
+        // Mapeo de paquetes a DTO
         if (entity.getPaquetes() != null) {
-            for (Paquete p : entity.getPaquetes()) {
-                PaqueteDTO pDto = new PaqueteDTO();
-                // Si tu paquete tiene un ID propio, agrégalo aquí también
-                pDto.setAlto(p.getAlto());
-                pDto.setAncho(p.getAncho());
-                pDto.setLargo(p.getLargo());
-                pDto.setPeso(p.getPeso());
-                pDto.setDescripcion(p.getDescripcion());
-                paquetesDTO.add(pDto);
-            }
+            dto.setPaquetes(entity.getPaquetes().stream().map(p -> 
+                new PaqueteDTO(null, p.getAlto(), p.getLargo(), p.getAncho(), p.getPeso(), p.getDescripcion())
+            ).collect(Collectors.toList()));
         }
-        dto.setPaquetes(paquetesDTO);
 
-        List<RegistroEnvioDTO> historialDTO = new ArrayList<>();
-        if (entity.getHistorial_envio()!= null) { 
-            for (RegistroEnvio registro : entity.getHistorial_envio()) {
-                RegistroEnvioDTO rDto = new RegistroEnvioDTO();
-                rDto.setId_registro(registro.getId_registro());
-                rDto.setFecha(registro.getFecha());
-                rDto.setDireccion(registro.getDireccion());
-                historialDTO.add(rDto);
-            }
+        // Mapeo de Historial a DTO
+        if (entity.getHistorial_envio() != null) {
+            dto.setHistorial_envio(entity.getHistorial_envio().stream().map(reg -> 
+                new RegistroEnvioDTO(reg.getId_registro(), reg.getFecha(), reg.getDireccion())
+            ).collect(Collectors.toList()));
         }
-        dto.setHistorial_envio(historialDTO);
         
         return dto;
     }
