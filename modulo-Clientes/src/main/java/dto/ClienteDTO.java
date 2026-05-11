@@ -2,27 +2,39 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package entidades;
+package dto;
 
+import entidades.Envio;
 import java.util.List;
+
 /**
  *
  * @author Jesús
  */
-public class Cliente {
-    private String id_cliente;
+public class ClienteDTO {
+    private String id_Cliente;
     private String nombre;
     private String telefono;
     private String direccion;
-    private List<Envio> envios;
+//    private List<EnvioDTO> envios;
     private String rfc;
 
-    public String getId_cliente() {
-        return id_cliente;
+    public ClienteDTO() {}
+
+    public ClienteDTO(String id, String nombre, String telefono, String direccion, String rfc) {
+        this.id_Cliente = id;
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.direccion = direccion;
+        this.rfc = rfc;
     }
 
-    public void setId_cliente(String id_cliente) {
-        this.id_cliente = id_cliente;
+    public String getId_Cliente() {
+        return id_Cliente;
+    }
+
+    public void setId_Cliente(String id_Cliente) {
+        this.id_Cliente = id_Cliente;
     }
 
     public String getNombre() {
@@ -47,14 +59,6 @@ public class Cliente {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
-    }
-
-    public List<Envio> getEnvios() {
-        return envios;
-    }
-
-    public void setEnvios(List<Envio> envios) {
-        this.envios = envios;
     }
 
     public String getRfc() {
