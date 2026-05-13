@@ -29,16 +29,15 @@ public class LogisticaMediador {
      * sin que los módulos se peleen entre sí.
      */
     public ClienteDTO obtenerClienteConSusEnvios(String idCliente) {
-        // 1. Pedimos los datos básicos al módulo de Clientes
+        //Se piden los datos básicos al módulo de Clientes
         ClienteDTO cliente = clienteCtrl.buscarPorId(idCliente);
         
         if (cliente != null) {
             // 2. Pedimos la lista de envíos al módulo de Envíos
-            // Nota: Aquí ya recibimos DTOs, por eso no hay error de mappers
-//            List<EnvioDTO> envios = envioCtrl.obtenerEnviosPorCliente(idCliente);
+            List<EnvioDTO> envios = envioCtrl.obtenerEnviosPorCliente(idCliente);
             
             // 3. Los inyectamos en el DTO de cliente
-//            cliente.setListaEnvios(envios);
+            cliente.setListaEnvios(envios);
         }
         
         return cliente;

@@ -10,6 +10,8 @@ import daos.IEnvioDAO;
 import dtos.EnvioDTO;
 import entidades.Envio;
 import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 import mappers.EnvioMapper;
 
 /**
@@ -28,20 +30,20 @@ public class EnvioControlador {
      */
     public boolean guardarEnvio(EnvioDTO datos) {
         try {
-            // 1. Generar un código de rastreo único (ej. TRK-8f9a...) si no viene uno
+            //Generar un código de rastreo único (ej. TRK-8f9a...) si no viene uno
             if (datos.getCodigo_rastreo() == null || datos.getCodigo_rastreo().isEmpty()) {
                 datos.setCodigo_rastreo("TRK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
             }
 
-            // 2. Usar el Mapper para convertir el DTO a Entidad
+            //Se usa el Mapper para convertir el DTO a Entidad
             Envio envioNuevo = EnvioMapper.toEntity(datos);
 
-            // 3. Mandarlo a guardar a la base de datos
+            //Se guarda en la base de datos
             boolean exito = envioDAO.registrarEnvio(envioNuevo);
             
             if (exito) {
                 System.out.println("Envío registrado exitosamente con código: " + envioNuevo.getCodigo_rastreo());
-                // FUTURO: Aquí es donde el Mediador gritará "¡Nuevo envío creado!"
+                //Aquí es donde el Mediador avisara sobre el nuevo envío creado
             }
             
             return exito;
@@ -82,5 +84,13 @@ public class EnvioControlador {
             System.err.println("El estado proporcionado no es válido: " + nuevoEstadoStr);
             return false;
         }
+    }
+    
+    public List<EnvioDTO> obtenerEnviosPorCliente(String idCliente) {
+        List<Envio> listaEntidades = envioDAO.obtenerHistCliente(idCliente);
+
+        return listaEntidades.stream()
+                .map(EnvioMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

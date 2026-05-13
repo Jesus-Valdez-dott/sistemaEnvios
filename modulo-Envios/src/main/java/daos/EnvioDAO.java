@@ -16,6 +16,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Updates.set;
 import java.time.LocalDate;
+import mappers.EnvioMapper;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 /**
@@ -135,9 +136,9 @@ public class EnvioDAO implements IEnvioDAO{
     @Override
     public List<Envio> obtenerHistCliente(String id_Cliente) {
         List<Envio> historial = new ArrayList<>();
-        
+    
         for (Document doc : coleccionEnvios.find(eq("id_cliente", id_Cliente))) {
-            historial.add(obtenerDetalles(doc.getObjectId("_id").toString()));
+            historial.add(EnvioMapper.fromDocumentToEntity(doc)); 
         }
         return historial;
     }

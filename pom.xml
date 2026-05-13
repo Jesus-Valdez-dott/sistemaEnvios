@@ -11,6 +11,7 @@
         <module>modulo-Envios</module>
         <module>modulo-Clientes</module>
         <module>main-ejecutable</module>
+        <module>modulo-Ventas</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -14,6 +14,7 @@ import Enums.EstadoEnvio;
  */
 public class Envio {
     private String id_envio;
+    private String id_cliente;
     private String codigo_rastreo;
     private LocalDate fecha_envio;
     private EstadoEnvio estado;
@@ -112,7 +113,13 @@ public class Envio {
     public void setId_empleado_entrega(String id_empleado_entrega) {
         this.id_empleado_entrega = id_empleado_entrega;
     }
-    
-    
+
+    public String getId_cliente() {
+        return id_cliente;
+    }
+
+    public void setId_cliente(String id_cliente) {
+        this.id_cliente = id_cliente;
+    }
     
 }
