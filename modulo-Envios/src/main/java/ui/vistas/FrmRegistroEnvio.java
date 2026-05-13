@@ -31,10 +31,10 @@ public class FrmRegistroEnvio extends JFrame {
         sidebar.setLayout(new GridLayout(10, 1, 0, 5));
         
         // Botones del menú
-        sidebar.add(crearBotonMenu("Dashboard"));
-        sidebar.add(crearBotonMenu("Nuevo Envío"));
-        sidebar.add(crearBotonMenu("Rastreo"));
-        sidebar.add(crearBotonMenu("Historial"));
+        sidebar.add(crearBotonMenu("Dashboard", "iconDashbord.png"));
+        sidebar.add(crearBotonMenu("Nuevo Envío", "newEnvio.png"));
+        sidebar.add(crearBotonMenu("Rastreo", "rastreoEnv.png"));
+        sidebar.add(crearBotonMenu("Historial", "historial.png"));
 
         // 2. PANEL PRINCIPAL (Contenido)
         JPanel content = new JPanel(new GridBagLayout());
@@ -47,12 +47,14 @@ public class FrmRegistroEnvio extends JFrame {
 
         // --- TARJETA 1: DATOS DEL CLIENTE ---
         JPanel cardCliente = crearTarjeta("Datos del Remitente");
-        cardCliente.setLayout(new GridLayout(3, 2, 10, 10));
+        cardCliente.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
         
-        cardCliente.add(new JLabel("Teléfono/ID:"));
-        JTextField txtBuscar = new JTextField();
-        txtBuscar.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Buscar cliente...");
-        cardCliente.add(txtBuscar);
+             JLabel lblTel = new JLabel("Teléfono/ID:");
+            JTextField txtBuscar = new JTextField(15); // Tamaño de columnas fijo
+            txtBuscar.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Buscar cliente...");
+
+            cardCliente.add(lblTel);
+            cardCliente.add(txtBuscar);
         
         cardCliente.add(new JLabel("Nombre:"));
         cardCliente.add(new JLabel("Pepito Gonzalez (Auto-completado)"));
@@ -76,10 +78,10 @@ public class FrmRegistroEnvio extends JFrame {
 
         // --- TARJETA 3: DESTINO Y ACCIONES ---
         JPanel cardDestino = crearTarjeta("Destino Final");
-        cardDestino.setLayout(new BorderLayout(10, 10));
-        JTextField txtDestino = new JTextField();
+        cardDestino.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        JTextField txtDestino = new JTextField(40); // Más largo pero no más alto
         txtDestino.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Calle, número, colonia...");
-        cardDestino.add(txtDestino, BorderLayout.CENTER);
+        cardDestino.add(txtDestino);
         
         JButton btnGuardar = new JButton("Generar Envío");
         btnGuardar.setBackground(new Color(39, 174, 96)); // Verde éxito
@@ -94,7 +96,7 @@ public class FrmRegistroEnvio extends JFrame {
         add(content, BorderLayout.CENTER);
         
         // Aplicar fuente Roboto (si ya la cargaste en tu Main)
-        aplicarFuentes(this);
+        //aplicarFuentes(this);
     }
 
     private JPanel crearTarjeta(String titulo) {
@@ -107,19 +109,42 @@ public class FrmRegistroEnvio extends JFrame {
         return panel;
     }
 
-    private JButton crearBotonMenu(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setForeground(Color.WHITE);
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return btn;
+    private JButton crearBotonMenu(String texto, String nombreIcono) {
+    JButton btn = new JButton(texto);
+    
+    ImageIcon icono = obtenerIconoRedimensionado("/ui/recursos/" + nombreIcono, 50, 50);
+    if (icono != null) {
+        btn.setIcon(icono);
     }
+    btn.setIconTextGap(15);   
+       btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+    btn.setForeground(Color.WHITE);
+    btn.setContentAreaFilled(false);
+    btn.setBorderPainted(false);
+    btn.setHorizontalAlignment(SwingConstants.LEFT);
+    btn.setFocusPainted(false);
+    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    
+    return btn;
+    }
+    
+    private ImageIcon obtenerIconoRedimensionado(String ruta, int ancho, int alto) {
+    try {
+        java.net.URL imgURL = getClass().getResource(ruta);
+        if (imgURL != null) {
+            ImageIcon iconoOriginal = new ImageIcon(imgURL);
+            // Extraemos la imagen, la escalamos suavemente y creamos un nuevo ImageIcon
+            Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+            return new ImageIcon(imagenEscalada);
+        }
+    } catch (Exception e) {
+        System.err.println("Error al redimensionar icono: " + ruta);
+    }
+    return null;
+}
 
-    private void aplicarFuentes(Component comp) {
+    //private void aplicarFuentes(Component comp) {
         // Aquí podrías usar tu clase Fuentes para iterar y aplicar Roboto
         // comp.setFont(Fuentes.ROBOTO_REGULAR.deriveFont(14f));
-    }
+   // }
 }
