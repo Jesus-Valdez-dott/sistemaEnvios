@@ -4,22 +4,28 @@
  */
 package dto;
 
-import entidades.Envio;
+import java.util.ArrayList;
 import java.util.List;
-
 /**
  *
  * @author Jesús
  */
-public class ClienteDTO {
+
+/**
+ * @param <T> Representa la lista de Envíos,
+ * sin crear dependencia fuerte con otros módulos.
+ */
+public class ClienteDTO<T> {
     private String id_Cliente;
     private String nombre;
     private String telefono;
     private String direccion;
-//    private List<EnvioDTO> envios;
     private String rfc;
+    private List<T> listaEnvios;
 
-    public ClienteDTO() {}
+    public ClienteDTO() {
+        this.listaEnvios = new ArrayList<T>();
+    }
 
     public ClienteDTO(String id, String nombre, String telefono, String direccion, String rfc) {
         this.id_Cliente = id;
@@ -27,6 +33,7 @@ public class ClienteDTO {
         this.telefono = telefono;
         this.direccion = direccion;
         this.rfc = rfc;
+        this.listaEnvios = new ArrayList<>();
     }
 
     public String getId_Cliente() {
@@ -67,5 +74,17 @@ public class ClienteDTO {
 
     public void setRfc(String rfc) {
         this.rfc = rfc;
+    }
+
+    public List<T> getListaEnvios() {
+        return listaEnvios;
+    }
+
+    public void setListaEnvios(List<T> listaEnvios) {
+        this.listaEnvios = listaEnvios;
+    }
+    
+    public void agregarEnvio(T envio) {
+        this.listaEnvios.add(envio);
     }
 }

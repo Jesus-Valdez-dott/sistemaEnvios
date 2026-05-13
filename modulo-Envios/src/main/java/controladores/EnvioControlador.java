@@ -5,6 +5,7 @@
 package controladores;
 
 import Enums.EstadoEnvio;
+import daos.EnvioDAO;
 import daos.IEnvioDAO;
 import dtos.EnvioDTO;
 import entidades.Envio;
@@ -18,8 +19,8 @@ import mappers.EnvioMapper;
 public class EnvioControlador {
     private final IEnvioDAO envioDAO;
 
-    public EnvioControlador(IEnvioDAO envioDAO) {
-        this.envioDAO = envioDAO;
+    public EnvioControlador() {
+        this.envioDAO = new EnvioDAO();
     }
 
     /**
