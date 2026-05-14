@@ -6,32 +6,22 @@
         <artifactId>sistemaPaqueteria</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>main-ejecutable</artifactId>
+    <artifactId>modulo-sucursales</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
-            <groupId>org.itson</groupId>
-            <artifactId>ModuloClientes</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>modulo-Envios</artifactId>
+            <artifactId>paqueteria-Core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>modulo-Ventas</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>modulo-sucursales</artifactId>
+            <artifactId>paqueteria-conecction</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
     <properties>
         <maven.compiler.release>23</maven.compiler.release>
-        <exec.mainClass>com.mycompany.main.ejecutable.MainEjecutable</exec.mainClass>
+        <exec.mainClass>com.mycompany.modulo.sucursales.ModuloSucursales</exec.mainClass>
     </properties>
 </project>

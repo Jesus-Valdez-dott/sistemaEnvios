@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package entidades;
+package dto;
 
 import java.util.List;
 
@@ -10,10 +10,10 @@ import java.util.List;
  *
  * @author Jesús
  */
-public class Sucursal {
+public class SucursalDTO {
     private String id_sucursal;
     private String nombre;
-    private List<Empleado> empleados;
+    private List<EmpleadoDTO> empleados;
     private String direccion;
     private double latitud;
     private double longitud;
@@ -34,11 +34,11 @@ public class Sucursal {
         this.nombre = nombre;
     }
 
-    public List<Empleado> getEmpleados() {
+    public List<EmpleadoDTO> getEmpleados() {
         return empleados;
     }
 
-    public void setEmpleados(List<Empleado> empleados) {
+    public void setEmpleados(List<EmpleadoDTO> empleados) {
         this.empleados = empleados;
     }
 
@@ -65,6 +65,4 @@ public class Sucursal {
     public void setLongitud(double longitud) {
         this.longitud = longitud;
     }
-    
-    
 }
