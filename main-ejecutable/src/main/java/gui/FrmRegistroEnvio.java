@@ -11,6 +11,7 @@
 package gui;
  
 import com.formdev.flatlaf.FlatClientProperties;
+import dto.VentaDTO;
 import dtos.EnvioDTO;
 import dtos.PaqueteDTO;
 import Mediadores.LogisticaMediador;
@@ -275,6 +276,13 @@ public class FrmRegistroEnvio extends JFrame {
                 if (exito) {
                     JOptionPane.showMessageDialog(this, "Envio registrado con exito!\nCodigo: " + envioDTO.getCodigo_rastreo(), "Exito", JOptionPane.INFORMATION_MESSAGE);
                     limpiarCampos();
+                    
+                    double totalCalculado = mediador.calcularCostoTotal(envioDTO);
+                    VentaDTO venta = new VentaDTO();
+                    venta.setMonto(totalCalculado);
+                    
+                    new FrmVenta(venta).setVisible(true);
+                    this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "No se pudo registrar el envio.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
