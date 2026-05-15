@@ -5,6 +5,7 @@
 package daos;
 
 import Enums.EstadoEnvio;
+import dtos.RegistroEnvioDTO;
 import entidades.Envio;
 import java.util.List;
 

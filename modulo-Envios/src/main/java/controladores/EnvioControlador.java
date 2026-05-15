@@ -20,100 +20,91 @@ import mappers.EnvioMapper;
  * @author Jesús
  */
 public class EnvioControlador {
+ 
     private final IEnvioDAO envioDAO;
-
+ 
     public EnvioControlador() {
         this.envioDAO = new EnvioDAO();
     }
-
+ 
     /**
-     * Recibe los datos de la pantalla FormularioEnvio y los procesa.
+     * Registra un nuevo envio. Genera codigo de rastreo si no viene uno.
      */
     public boolean guardarEnvio(EnvioDTO datos) {
         try {
-            //Generar un código de rastreo único (ej. TRK-8f9a...) si no viene uno
             if (datos.getCodigo_rastreo() == null || datos.getCodigo_rastreo().isEmpty()) {
                 datos.setCodigo_rastreo("TRK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
             }
-
-            //Se usa el Mapper para convertir el DTO a Entidad
+            // Estado inicial siempre es REGISTRADO
+            datos.setEstado(EstadoEnvio.REGISTRADO);
+ 
             Envio envioNuevo = EnvioMapper.toEntity(datos);
-
-            //Se guarda en la base de datos
             boolean exito = envioDAO.registrarEnvio(envioNuevo);
-            
+ 
             if (exito) {
-                System.out.println("Envío registrado exitosamente con código: " + envioNuevo.getCodigo_rastreo());
-                //Aquí es donde el Mediador avisara sobre el nuevo envío creado
+                System.out.println("Envio registrado con codigo: " + datos.getCodigo_rastreo());
             }
-            
             return exito;
-            
+ 
         } catch (Exception e) {
-            System.err.println("Error al procesar el envío: " + e.getMessage());
+            System.err.println("Error al procesar el envio: " + e.getMessage());
             return false;
         }
     }
-
+ 
     /**
-     * Recibe un código desde la VistaRastreo y devuelve la información empaquetada.
+     * Busca un envio por su _id de MongoDB.
+     * Usado internamente entre modulos.
+     */
+    public EnvioDTO obtenerDetallesPorId(String idEnvio) {
+        Envio envio = envioDAO.obtenerDetalles(idEnvio);
+        return EnvioMapper.toDTO(envio);
+    }
+ 
+    /**
+     * Busca un envio por su codigo de rastreo (TRK-XXXX).
+     * CORREGIDO: ahora llama a rastrearPaquete, no a obtenerDetalles.
      */
     public EnvioDTO rastrearEnvio(String codigo) {
-        //Buscar en la base de datos
-        Envio envioEncontrado = envioDAO.obtenerDetalles(codigo);
-        
-        if (envioEncontrado == null) {
-            return null;
-        }
-
-        //Mapear la entidad de vuelta a un DTO para que la pantalla lo pueda mostrar
-        return EnvioMapper.toDTO(envioEncontrado);
-    }
-
-    /**
-     * Actualiza el estado de un envío (Ej. de 'Registrado' a 'En_Transito').
-     */
-    public boolean actualizarEstado(String idEnvio, String nuevoEstadoStr) {
-        try {
-            //Se convierte el String al Enum correspondiente
-            EstadoEnvio estado = EstadoEnvio.valueOf(nuevoEstadoStr);
-            
-            //Actualizar en la base de datos
-            return envioDAO.actualizarEdo(idEnvio, estado);
-            
-        } catch (IllegalArgumentException e) {
-            System.err.println("El estado proporcionado no es válido: " + nuevoEstadoStr);
-            return false;
-        }
-    }
-    
-    public List<EnvioDTO> obtenerEnviosPorCliente(String idCliente) {
-        List<Envio> listaEntidades = envioDAO.obtenerHistCliente(idCliente);
-
-        return listaEntidades.stream()
-                .map(EnvioMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-    
-    public EnvioDTO obtenerSeguimientoCompleto(String codigo) {
-        // 1. Buscamos el envío en la base de datos
         Envio envio = envioDAO.rastrearPaquete(codigo);
-
         if (envio == null) return null;
-
-        // 2. Convertimos a DTO usando el Mapper
+ 
         EnvioDTO dto = EnvioMapper.toDTO(envio);
-
-        // 3. Ordenamos el historial por fecha (del más reciente al más antiguo)
-        if (dto.getHistorial_envio()!= null) {
+ 
+        // Ordena historial del mas reciente al mas antiguo
+        if (dto.getHistorial_envio() != null) {
             dto.getHistorial_envio().sort((r1, r2) -> r2.getFecha().compareTo(r1.getFecha()));
         }
         return dto;
     }
-    
+ 
+    /**
+     * Cambia el estado del envio y agrega un hito al historial automaticamente.
+     */
+    public boolean actualizarEstado(String idEnvio, String nuevoEstadoStr) {
+        try {
+            EstadoEnvio estado = EstadoEnvio.valueOf(nuevoEstadoStr);
+            return envioDAO.actualizarEdo(idEnvio, estado);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Estado no valido: " + nuevoEstadoStr);
+            return false;
+        }
+    }
+ 
+    /**
+     * Agrega un hito de ubicacion al historial de rastreo de un envio.
+     */
     public boolean actualizarHistorial(String idEnvio, RegistroEnvioDTO movimiento) {
-        // 1. Convertimos el DTO de movimiento a Entidad si es necesario 
-        // o lo pasamos directamente al DAO
         return envioDAO.agregarHitoHistorial(idEnvio, movimiento);
+    }
+ 
+    /**
+     * Devuelve todos los envios de un cliente por su id.
+     */
+    public List<EnvioDTO> obtenerEnviosPorCliente(String idCliente) {
+        List<Envio> listaEntidades = envioDAO.obtenerHistCliente(idCliente);
+        return listaEntidades.stream()
+                .map(EnvioMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
