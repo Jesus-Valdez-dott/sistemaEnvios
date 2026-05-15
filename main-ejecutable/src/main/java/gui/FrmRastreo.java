@@ -100,7 +100,11 @@ public class FrmRastreo extends JFrame{
         if (codigo.isEmpty()) return;
 
         // Llamada al Mediador
+<<<<<<< HEAD
         EnvioDTO envio = mediador.ejecutarRastreoCompleto(codigo);
+=======
+  EnvioDTO envio = mediador.rastrearEnvio(codigo);
+>>>>>>> ceed757d98253a30d953218c0a301e4d5038c4f8
 
         if (envio != null) {
             actualizarInterfaz(envio);
@@ -131,7 +135,7 @@ public class FrmRastreo extends JFrame{
     }
 
     private void abrirMapa() {
-        String codigo = txtCodigoBusqueda.getText();
+        String codigo = txtCodigoBusqueda.getText().trim();
         // El mediador usa la lógica de OpenStreetMap que creamos
         mediador.abrirMapaUbicacionActual(codigo);
     }
