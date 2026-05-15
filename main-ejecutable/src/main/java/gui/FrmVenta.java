@@ -90,12 +90,23 @@ public class FrmVenta extends JFrame{
 
         // --- BOTONES ---
         btnPagar = new JButton("Confirmar Pago");
+        btnCancelar = new JButton("Cancelar y Volver");
         btnPagar.setBackground(new Color(103, 114, 229)); // Color Stripe Purple
         btnPagar.setForeground(Color.WHITE);
         btnPagar.setFont(Fuentes.ROBOTO_REGULAR.deriveFont(Font.BOLD, 16f));
         btnPagar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btnPagar.addActionListener(e -> procesarPago());
+        
+        btnCancelar.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "¿Seguro que desea cancelar el pago? El envío no será procesado.", 
+                "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                new FrmRegistroEnvio(this.mediador).setVisible(true); // Regresa a capturar datos
+                this.dispose();
+            }
+        });
 
         // Ensamblado
         mainPanel.add(lblTitulo, BorderLayout.NORTH);
