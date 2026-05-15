@@ -10,22 +10,22 @@ package com.mycompany.main.ejecutable;
  */
 import Mediadores.LogisticaMediador;
 import com.formdev.flatlaf.FlatLightLaf;
-import gui.FrmRegistroEnvio;
+import gui.FrmLogin;
 import javax.swing.SwingUtilities;
  
 public class MainEjecutable {
  
     public static void main(String[] args) {
-        // 1. Aplicar tema visual FlatLaf
+        // 1. Tema visual
         FlatLightLaf.setup();
  
-        // 2. Crear el mediador (el unico punto que conecta todos los modulos)
+        // 2. Un solo mediador para toda la sesion
         LogisticaMediador mediador = new LogisticaMediador();
  
-        // 3. Abrir la ventana en el hilo de Swing
+        // 3. Arrancar en el Login
         SwingUtilities.invokeLater(() -> {
-            FrmRegistroEnvio ventana = new FrmRegistroEnvio(mediador);
-            ventana.setVisible(true);
+            FrmLogin login = new FrmLogin(mediador);
+            login.setVisible(true);
         });
     }
 }

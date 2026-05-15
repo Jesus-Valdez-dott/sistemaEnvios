@@ -24,11 +24,12 @@ public class FrmRastreo extends JFrame{
     private JLabel lblEstado, lblDestinatario, lblOrigen;
     
     // Usamos el Mediador como puente único
-    private final LogisticaMediador mediador = new LogisticaMediador();
+    private final LogisticaMediador mediador;
 
-    public FrmRastreo() {
+    public FrmRastreo(LogisticaMediador mediador) {
         configurarVentana();
         initUI();
+        this.mediador = mediador;
     }
 
     private void configurarVentana() {
@@ -100,11 +101,9 @@ public class FrmRastreo extends JFrame{
         if (codigo.isEmpty()) return;
 
         // Llamada al Mediador
-<<<<<<< HEAD
-        EnvioDTO envio = mediador.ejecutarRastreoCompleto(codigo);
-=======
-  EnvioDTO envio = mediador.rastrearEnvio(codigo);
->>>>>>> ceed757d98253a30d953218c0a301e4d5038c4f8
+
+        
+       EnvioDTO envio = mediador.rastrearEnvio(codigo);
 
         if (envio != null) {
             actualizarInterfaz(envio);
