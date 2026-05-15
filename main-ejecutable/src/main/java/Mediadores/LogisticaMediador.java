@@ -68,22 +68,22 @@ public class LogisticaMediador {
         double tarifaBase = 150.00;
         double precioPorKg = 25.50;
         double costoTotal = 0;
-
+ 
         if (envio.getPaquetes() == null || envio.getPaquetes().isEmpty()) {
             return tarifaBase;
         }
-
+ 
         for (PaqueteDTO p : envio.getPaquetes()) {
             // 1. Calculamos peso volumétrico
             double pesoVolumetrico = (p.getLargo() * p.getAncho() * p.getAlto()) / 5000;
-
+ 
             // 2. Tomamos el mayor entre el real y el volumétrico
             double pesoACobrar = Math.max(p.getPeso(), pesoVolumetrico);
-
+ 
             // 3. Sumamos al total del envío
             costoTotal += tarifaBase + (pesoACobrar * precioPorKg);
         }
-
+ 
         return costoTotal;
     }
     
@@ -135,5 +135,9 @@ public class LogisticaMediador {
  
     public boolean darDeAltaCliente(ClienteDTO cliente) {
         return clienteControlador.registrarCliente(cliente);
+    }
+ 
+    public List<ClienteDTO> obtenerTodosLosClientes() {
+        return clienteControlador.obtenerTodos();
     }
 }

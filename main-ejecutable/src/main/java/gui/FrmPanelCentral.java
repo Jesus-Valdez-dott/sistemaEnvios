@@ -51,7 +51,7 @@ public class FrmPanelCentral extends JFrame {
  
         // Las 7 tarjetas del sistema segun los casos de uso del proyecto
         grid.add(crearTarjeta("Registrar Envio",     "Capturar nuevo envio",          e -> abrirRegistroEnvio()));
-        grid.add(crearTarjeta("Registrar Cliente",   "Dar de alta un cliente",         e -> abrirProximamente()));
+        grid.add(crearTarjeta("Registrar Cliente",   "Dar de alta un cliente",         e -> abrirRegistroCliente()));
         grid.add(crearTarjeta("Pagar Envio",         "Procesar pago con Stripe",       e -> abrirProximamente()));
         grid.add(crearTarjeta("Rastrear Paquete",    "Seguimiento por codigo",         e -> abrirRastreo()));
         grid.add(crearTarjeta("Consultar Historial", "Envios de un cliente",           e -> abrirHistorial()));
@@ -136,6 +136,10 @@ public class FrmPanelCentral extends JFrame {
     
     private void abrirHistorial() {
         new FrmHistoCliente(mediador).setVisible(true);
+    }
+ 
+    private void abrirRegistroCliente() {
+        new FrmRegistroCliente(mediador).setVisible(true);
     }
  
     private void abrirProximamente() {
