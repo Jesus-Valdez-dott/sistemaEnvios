@@ -38,7 +38,7 @@ public class pruebaRastreo {
 
         // 4. Lanzar la pantalla
         java.awt.EventQueue.invokeLater(() -> {
-            new FrmRastreo().setVisible(true);
+            new FrmRastreo(null).setVisible(true);
         });
     }
 
