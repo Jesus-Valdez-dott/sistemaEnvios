@@ -80,8 +80,6 @@ public class VentaControlador {
                 .collect(Collectors.toList());
     }
     
-    
-    
     /**
      * Busca una venta específica por su folio o ID.
      */
