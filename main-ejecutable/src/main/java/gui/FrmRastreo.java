@@ -100,7 +100,7 @@ public class FrmRastreo extends JFrame{
         if (codigo.isEmpty()) return;
 
         // Llamada al Mediador
-//        EnvioDTO envio = mediador.ejecutarRastreoCompleto(codigo);
+        EnvioDTO envio = mediador.ejecutarRastreoCompleto(codigo);
 
         if (envio != null) {
             actualizarInterfaz(envio);

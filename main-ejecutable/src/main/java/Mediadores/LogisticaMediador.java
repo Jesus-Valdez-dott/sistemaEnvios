@@ -62,20 +62,47 @@ public class LogisticaMediador {
         // Si el movimiento viene de una sucursal, podríamos jalar las coordenadas de la sucursal aquí
         return envioControlador.actualizarHistorial(idEnvio, movimiento);
     }
+    
+    public boolean registrarLlegadaASucursal(String idEnvio, String nombreSucursal, String lat, String lon) {
+        RegistroEnvioDTO hito = new RegistroEnvioDTO();
+        hito.setDireccion(nombreSucursal);
+        hito.setLatitud(lat);
+        hito.setLongitud(lon);
+
+        // Llamamos al método que acabamos de crear
+        return envioControlador.actualizarHistorial(idEnvio, hito);
+    }
 
     // --- SECCIÓN: RASTREO (API + HISTORIAL) ---
 
-    public void ejecutarRastreoCompleto(String codigo) {
+    public EnvioDTO ejecutarRastreoCompleto(String codigo) {
         EnvioDTO envio = envioControlador.obtenerSeguimientoCompleto(codigo);
 
         if (envio != null && envio.getHistorial_envio()!= null && !envio.getHistorial_envio().isEmpty()) {
             // Obtenemos el punto más reciente
-            RegistroEnvioDTO actual = envio.getHistorial_envio().get(0); 
+            RegistroEnvioDTO actual = envio.getHistorial_envio().get(0);
+        }
+        return envio;
+    }
+    
+    public void abrirMapaUbicacionActual(String codigo) {
+    // 1. Buscamos el envío completo (que ya trae su historial)
+    EnvioDTO envio = envioControlador.obtenerSeguimientoCompleto(codigo);
 
-            // Pasamos los Strings al servicio de mapas
-            mapaService.abrirMapaEnNavegador(actual.getLatitud(), actual.getLongitud());
+    if (envio != null && envio.getHistorial_envio()!= null && !envio.getHistorial_envio().isEmpty()) {
+        // 2. Obtenemos el hito más reciente (índice 0 si está ordenado por fecha)
+        RegistroEnvioDTO actual = envio.getHistorial_envio().get(0);
+        
+        // 3. Extraemos las coordenadas (que tienes como String)
+        String lat = actual.getLatitud();
+        String lon = actual.getLongitud();
+
+        // 4. Validamos que no estén vacías antes de abrir
+        if (lat != null && !lat.isEmpty() && lon != null && !lon.isEmpty()) {
+            mapaService.abrirMapaEnNavegador(lat, lon);
         }
     }
+}
 
     // --- SECCIÓN: SUCURSALES Y EMPLEADOS ---
 

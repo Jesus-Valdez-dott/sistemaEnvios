@@ -17,6 +17,7 @@ import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Updates.set;
 import java.time.LocalDate;
 import mappers.EnvioMapper;
+import dtos.RegistroEnvioDTO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 /**
@@ -166,14 +167,13 @@ public class EnvioDAO implements IEnvioDAO{
             // Convertimos los datos del DTO a un Documento de MongoDB
             Document docHito = new Document()
                     .append("fecha", new java.util.Date()) // Fecha actual
-                    .append("ubicacion", movimiento.getUbicacion())
-                    .append("descripcion", movimiento.getDescripcion())
-                    .append("latitud", movimiento.getLatitud())  // Se guarda como String según tu DTO
+                    .append("direccion", movimiento.getDireccion())
+                    .append("latitud", movimiento.getLatitud())
                     .append("longitud", movimiento.getLongitud());
 
             // 2. Usamos updateOne con $push para insertar en el arreglo "historial"
             // Buscamos por el ID interno de MongoDB
-            coleccion.updateOne(
+            coleccionEnvios.updateOne(
                 eq("_id", new ObjectId(idEnvio)), 
                 new Document("$push", new Document("historial", docHito))
             );
