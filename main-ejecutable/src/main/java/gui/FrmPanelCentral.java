@@ -54,9 +54,9 @@ public class FrmPanelCentral extends JFrame {
         grid.add(crearTarjeta("Registrar Cliente",   "Dar de alta un cliente",         e -> abrirProximamente()));
         grid.add(crearTarjeta("Pagar Envio",         "Procesar pago con Stripe",       e -> abrirProximamente()));
         grid.add(crearTarjeta("Rastrear Paquete",    "Seguimiento por codigo",         e -> abrirRastreo()));
-        grid.add(crearTarjeta("Consultar Historial", "Envios de un cliente",           e -> abrirProximamente()));
+        grid.add(crearTarjeta("Consultar Historial", "Envios de un cliente",           e -> abrirHistorial()));
         grid.add(crearTarjeta("Gestion Sucursales",  "Administrar sucursales",         e -> abrirProximamente()));
-        grid.add(crearTarjeta("Generar Reporte",     "Reporte mensual por sucursal",   e -> abrirProximamente()));
+        grid.add(crearTarjeta("Generar Reporte",     "Reporte mensual por sucursal",   e -> abrirReporte()));
  
         // Dos celdas vacias para completar el grid 3x3
         grid.add(new JPanel());
@@ -127,6 +127,15 @@ public class FrmPanelCentral extends JFrame {
     private void abrirRastreo() {
         FrmRastreo ventana = new FrmRastreo(mediador);
         ventana.setVisible(true);
+    }
+    
+    private void abrirReporte() {
+        FrmReporteMensual ventana = new FrmReporteMensual(mediador);
+        ventana.setVisible(true);
+    }
+    
+    private void abrirHistorial() {
+        new FrmHistoCliente(mediador).setVisible(true);
     }
  
     private void abrirProximamente() {

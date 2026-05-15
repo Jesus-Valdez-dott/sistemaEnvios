@@ -43,6 +43,10 @@ public class LogisticaMediador {
     public boolean procesarVentaFinal(VentaDTO<?> venta) {
         return ventaControlador.procesarVenta(venta);
     }
+    
+    public List<VentaDTO<?>> obtenerVentasUltimoMes() {
+        return ventaControlador.generarReporteUltimoMes();
+    }
  
     // --- ENVIOS ---
  
@@ -81,6 +85,11 @@ public class LogisticaMediador {
         }
 
         return costoTotal;
+    }
+    
+    public List<EnvioDTO> consultarEnviosPorCliente(String id) {
+        // El controlador se encarga de buscar en la BD ya sea por nombre o teléfono
+        return envioControlador.obtenerEnviosPorCliente(id);
     }
  
     // --- RASTREO ---
