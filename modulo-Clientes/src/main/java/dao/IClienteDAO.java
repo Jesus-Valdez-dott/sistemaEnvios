@@ -13,8 +13,8 @@ import java.util.List;
  */
 public interface IClienteDAO {
     boolean agregarCliente(Cliente cliente);
-    boolean eliminarCliente(String id_cliente);
+    boolean eliminarCliente(String telefono);
     boolean actualizarCliente(Cliente cliente);
     List<Cliente> listarClientes();
-    Cliente buscarCliente(String id_cliente);
+    Cliente buscarCliente(String telefono); 
 }

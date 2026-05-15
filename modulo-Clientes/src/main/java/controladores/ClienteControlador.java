@@ -52,7 +52,12 @@ public class ClienteControlador {
         return ClienteMapper.toDTO(entidad);
     }
 
-    public boolean eliminarCliente(String id) {
-        return clienteDAO.eliminarCliente(id);
+     public ClienteDTO buscarPorTelefono(String telefono) {
+        Cliente entidad = clienteDAO.buscarCliente(telefono);
+        return ClienteMapper.toDTO(entidad);
+    }
+ 
+    public boolean eliminarCliente(String telefono) {
+        return clienteDAO.eliminarCliente(telefono);
     }
 }

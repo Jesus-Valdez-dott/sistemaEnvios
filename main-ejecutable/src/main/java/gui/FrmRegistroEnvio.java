@@ -15,8 +15,11 @@ import dto.VentaDTO;
 import dtos.EnvioDTO;
 import dtos.PaqueteDTO;
 import Mediadores.LogisticaMediador;
+import dto.ClienteDTO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
  
 /**
  * Vista de registro de envio.
@@ -25,19 +28,17 @@ public class FrmRegistroEnvio extends JFrame {
  
     private JTextField txtPeso, txtAlto, txtAncho, txtLargo, txtTelefono;
     private JTextArea txtDireccionDestino;
-    private JLabel lblNombreCliente;
+    private JLabel lblNombreCliente, lblDireccionCliente, lblRfcCliente;
     private JButton btnOk;
-    private JTextField txtNombreDestinatario;
-    private JTextField txtTelefonoDestinatario;
+    private JTextField txtNombreDestinatario, txtTelefonoDestinatario;
  
-    // CAMBIO: usamos el Mediador en vez del controlador directo
     private final LogisticaMediador mediador;
+    private String idClienteEncontrado = null; // telefono = id
  
     public FrmRegistroEnvio(LogisticaMediador mediador) {
         this.mediador = mediador;
- 
-        setTitle("ObsExpress - Sistema de Paqueteria");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("ObsExpress - Registro de Envio");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1200, 750);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -56,15 +57,9 @@ public class FrmRegistroEnvio extends JFrame {
  
         JLabel lblLogo = new JLabel("OBS EXPRESS");
         lblLogo.setForeground(Color.WHITE);
-        lblLogo.setFont(new Font("Roboto", Font.BOLD, 20));
+        lblLogo.setFont(new Font("SansSerif", Font.BOLD, 20));
         lblLogo.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
         sidebar.add(lblLogo);
- 
-        sidebar.add(crearBotonMenu("Dashboard", "iconDashbord.png"));
-        sidebar.add(crearBotonMenu("Nuevo Envio", "newEnvio.png"));
-        sidebar.add(crearBotonMenu("Rastreo", "rastreoEnv.png"));
-        sidebar.add(crearBotonMenu("Historial", "historial.png"));
- 
         return sidebar;
     }
  
@@ -78,7 +73,7 @@ public class FrmRegistroEnvio extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
  
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weighty = 0.3;
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weighty = 0.35;
         content.add(crearTarjetaRemitente(), gbc);
  
         gbc.gridx = 1; gbc.gridy = 0;
@@ -96,34 +91,53 @@ public class FrmRegistroEnvio extends JFrame {
     }
  
     private JPanel crearTarjetaRemitente() {
-        JPanel panel = crearBaseTarjeta("Datos del Remitente");
+        JPanel panel = crearBaseTarjeta("Remitente");
         panel.setLayout(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
-        g.insets = new Insets(5, 5, 5, 5);
+        g.insets = new Insets(6, 8, 6, 8);
         g.anchor = GridBagConstraints.WEST;
+        g.fill = GridBagConstraints.HORIZONTAL;
  
-        g.gridx = 0; g.gridy = 0;
-        panel.add(new JLabel("Telefono/ID:"), g);
-        g.gridx = 1;
-        txtTelefono = new JTextField(15);
-        txtTelefono.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Ej. 6441...");
+        // Fila 0: label telefono
+        g.gridx = 0; g.gridy = 0; g.gridwidth = 1; g.weightx = 0;
+        panel.add(new JLabel("Telefono:"), g);
+ 
+        // Campo telefono
+        g.gridx = 1; g.weightx = 1.0;
+        txtTelefono = new JTextField();
+        txtTelefono.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Ej. 6441234567");
         panel.add(txtTelefono, g);
  
-        g.gridx = 0; g.gridy = 1;
+        // Fila 1: datos del cliente que aparecen al buscar
+        g.gridx = 0; g.gridy = 1; g.weightx = 0;
         panel.add(new JLabel("Nombre:"), g);
-        g.gridx = 1;
-        lblNombreCliente = new JLabel("Pendiente de busqueda...");
+        g.gridx = 1; g.weightx = 1.0;
+        lblNombreCliente = new JLabel("—");
         lblNombreCliente.setForeground(Color.GRAY);
         panel.add(lblNombreCliente, g);
+ 
+        g.gridx = 0; g.gridy = 2; g.weightx = 0;
+        panel.add(new JLabel("Direccion:"), g);
+        g.gridx = 1; g.weightx = 1.0;
+        lblDireccionCliente = new JLabel("—");
+        lblDireccionCliente.setForeground(Color.GRAY);
+        panel.add(lblDireccionCliente, g);
+ 
+        g.gridx = 0; g.gridy = 3; g.weightx = 0;
+        panel.add(new JLabel("RFC:"), g);
+        g.gridx = 1; g.weightx = 1.0;
+        lblRfcCliente = new JLabel("—");
+        lblRfcCliente.setForeground(Color.GRAY);
+        panel.add(lblRfcCliente, g);
  
         return panel;
     }
  
     private JPanel crearTarjetaPaquete() {
-        JPanel panel = crearBaseTarjeta("Detalles del Paquete");
+        JPanel panel = crearBaseTarjeta("Paquete");
         panel.setLayout(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
-        g.insets = new Insets(8, 5, 8, 5);
+        g.insets = new Insets(8, 8, 8, 8);
         g.anchor = GridBagConstraints.WEST;
  
         g.gridx = 0; g.gridy = 0;
@@ -133,45 +147,44 @@ public class FrmRegistroEnvio extends JFrame {
         panel.add(txtPeso, g);
  
         g.gridx = 0; g.gridy = 1;
-        panel.add(new JLabel("Medidas (Al x An x Lar):"), g);
+        panel.add(new JLabel("Medidas (Al x An x La):"), g);
         g.gridx = 1;
-        JPanel pnlDim = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        pnlDim.setOpaque(false);
+        JPanel dims = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        dims.setOpaque(false);
         txtAlto = new JTextField(3);
         txtAncho = new JTextField(3);
         txtLargo = new JTextField(3);
-        pnlDim.add(txtAlto);
-        pnlDim.add(new JLabel("x"));
-        pnlDim.add(txtAncho);
-        pnlDim.add(new JLabel("x"));
-        pnlDim.add(txtLargo);
-        panel.add(pnlDim, g);
+        dims.add(txtAlto); dims.add(new JLabel("x"));
+        dims.add(txtAncho); dims.add(new JLabel("x"));
+        dims.add(txtLargo);
+        panel.add(dims, g);
  
         return panel;
     }
  
     private JPanel crearTarjetaDestino() {
-        JPanel panel = crearBaseTarjeta("Destino Final");
+        JPanel panel = crearBaseTarjeta("Destino");
         panel.setLayout(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
-        g.insets = new Insets(5, 5, 5, 5);
+        g.insets = new Insets(5, 8, 5, 8);
         g.anchor = GridBagConstraints.WEST;
+        g.fill = GridBagConstraints.HORIZONTAL;
  
-        g.gridx = 0; g.gridy = 0;
-        panel.add(new JLabel("Nombre Destinatario:"), g);
-        g.gridx = 1;
-        txtNombreDestinatario = new JTextField(20);
+        g.gridx = 0; g.gridy = 0; g.weightx = 0;
+        panel.add(new JLabel("Nombre:"), g);
+        g.gridx = 1; g.weightx = 1.0;
+        txtNombreDestinatario = new JTextField();
         panel.add(txtNombreDestinatario, g);
  
-        g.gridx = 0; g.gridy = 1;
+        g.gridx = 0; g.gridy = 1; g.weightx = 0;
         panel.add(new JLabel("Telefono:"), g);
-        g.gridx = 1;
-        txtTelefonoDestinatario = new JTextField(15);
+        g.gridx = 1; g.weightx = 1.0;
+        txtTelefonoDestinatario = new JTextField();
         panel.add(txtTelefonoDestinatario, g);
  
-        g.gridx = 0; g.gridy = 2;
+        g.gridx = 0; g.gridy = 2; g.weightx = 0;
         panel.add(new JLabel("Direccion:"), g);
-        g.gridx = 1;
+        g.gridx = 1; g.weightx = 1.0;
         txtDireccionDestino = new JTextArea(3, 20);
         txtDireccionDestino.setLineWrap(true);
         panel.add(new JScrollPane(txtDireccionDestino), g);
@@ -183,15 +196,13 @@ public class FrmRegistroEnvio extends JFrame {
         JPanel pnl = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         pnl.setOpaque(false);
  
-        JButton btnCan = new JButton("Cancelar");
-        btnCan.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_BORDERLESS);
+        JButton btnCan = new JButton("Limpiar");
         btnCan.addActionListener(e -> limpiarCampos());
  
         btnOk = new JButton("Generar Envio");
         btnOk.setBackground(new Color(39, 174, 96));
         btnOk.setForeground(Color.WHITE);
         btnOk.setPreferredSize(new Dimension(150, 40));
-        btnOk.putClientProperty("JButton.buttonType", "roundRect");
  
         pnl.add(btnCan);
         pnl.add(btnOk);
@@ -202,42 +213,40 @@ public class FrmRegistroEnvio extends JFrame {
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(230, 230, 230), 1, true),
-            BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10), titulo)
+            BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true),
+            BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8), titulo)
         ));
         return panel;
     }
  
-    private JButton crearBotonMenu(String texto, String icono) {
-        JButton btn = new JButton(texto);
-        btn.setPreferredSize(new Dimension(220, 45));
-        btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setForeground(Color.WHITE);
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setIconTextGap(15);
+    // Busca el cliente automaticamente al salir del campo telefono
+    private void buscarCliente() {
+        String telefono = txtTelefono.getText().trim();
+        if (telefono.isEmpty()) return;
  
-        ImageIcon img = obtenerIconoRedimensionado("/ui/recursos/" + icono, 22, 22);
-        if (img != null) btn.setIcon(img);
+        ClienteDTO cliente = mediador.buscarClientePorTelefono(telefono);
  
-        return btn;
-    }
- 
-    private ImageIcon obtenerIconoRedimensionado(String ruta, int w, int h) {
-        try {
-            java.net.URL url = getClass().getResource(ruta);
-            if (url != null) {
-                Image img = new ImageIcon(url).getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-                return new ImageIcon(img);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (cliente != null) {
+            idClienteEncontrado = telefono; // telefono = id
+            lblNombreCliente.setText(cliente.getNombre());
+            lblDireccionCliente.setText(cliente.getDireccion());
+            lblRfcCliente.setText(cliente.getRfc());
+            lblNombreCliente.setForeground(new Color(30, 130, 76));
+            lblDireccionCliente.setForeground(new Color(30, 130, 76));
+            lblRfcCliente.setForeground(new Color(30, 130, 76));
+        } else {
+            idClienteEncontrado = null;
+            lblNombreCliente.setText("Cliente no encontrado");
+            lblDireccionCliente.setText("—");
+            lblRfcCliente.setText("—");
+            lblNombreCliente.setForeground(Color.RED);
+            lblDireccionCliente.setForeground(Color.GRAY);
+            lblRfcCliente.setForeground(Color.GRAY);
         }
-        return null;
     }
  
     private void limpiarCampos() {
+        txtTelefono.setText("");
         txtPeso.setText("");
         txtAlto.setText("");
         txtAncho.setText("");
@@ -245,50 +254,81 @@ public class FrmRegistroEnvio extends JFrame {
         txtNombreDestinatario.setText("");
         txtTelefonoDestinatario.setText("");
         txtDireccionDestino.setText("");
-        txtTelefono.setText("");
-        lblNombreCliente.setText("Pendiente de busqueda...");
+        lblNombreCliente.setText("—");
+        lblDireccionCliente.setText("—");
+        lblRfcCliente.setText("—");
+        lblNombreCliente.setForeground(Color.GRAY);
+        lblDireccionCliente.setForeground(Color.GRAY);
+        lblRfcCliente.setForeground(Color.GRAY);
+        idClienteEncontrado = null;
     }
  
     private void configurarEventos() {
+        // La busqueda se dispara al salir del campo (Tab o clic en otro lado)
+        txtTelefono.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                buscarCliente();
+            }
+        });
+        // También con Enter
+        txtTelefono.addActionListener(e -> buscarCliente());
+ 
         btnOk.addActionListener(e -> {
             try {
-                if (txtPeso.getText().isEmpty() || txtAlto.getText().isEmpty()) {
-                    throw new Exception("Los campos de paquete no pueden estar vacios");
+                if (idClienteEncontrado == null) {
+                    JOptionPane.showMessageDialog(this,
+                        "Ingresa el telefono de un cliente registrado.",
+                        "Cliente requerido", JOptionPane.WARNING_MESSAGE);
+                    txtTelefono.requestFocus();
+                    return;
+                }
+                if (txtPeso.getText().isEmpty() || txtAlto.getText().isEmpty()
+                        || txtAncho.getText().isEmpty() || txtLargo.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                        "Completa los datos del paquete.",
+                        "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
  
-                PaqueteDTO paqueteDTO = new PaqueteDTO();
-                paqueteDTO.setPeso(Double.parseDouble(txtPeso.getText()));
-                paqueteDTO.setAlto(Double.parseDouble(txtAlto.getText()));
-                paqueteDTO.setAncho(Double.parseDouble(txtAncho.getText()));
-                paqueteDTO.setLargo(Double.parseDouble(txtLargo.getText()));
-                paqueteDTO.setDescripcion("Paquete estandar");
+                PaqueteDTO paquete = new PaqueteDTO();
+                paquete.setPeso(Double.parseDouble(txtPeso.getText()));
+                paquete.setAlto(Double.parseDouble(txtAlto.getText()));
+                paquete.setAncho(Double.parseDouble(txtAncho.getText()));
+                paquete.setLargo(Double.parseDouble(txtLargo.getText()));
+                paquete.setDescripcion("Paquete estandar");
  
-                EnvioDTO envioDTO = new EnvioDTO();
-                envioDTO.setNombre_destinatario(txtNombreDestinatario.getText());
-                envioDTO.setDireccion_destino(txtDireccionDestino.getText());
-                envioDTO.setTelefono_destinatario(txtTelefonoDestinatario.getText());
-                envioDTO.setFecha_envio(java.time.LocalDate.now());
-                envioDTO.setPaquetes(java.util.List.of(paqueteDTO));
+                EnvioDTO envio = new EnvioDTO();
+                envio.setId_cliente(idClienteEncontrado); // telefono = id
+                envio.setNombre_destinatario(txtNombreDestinatario.getText());
+                envio.setDireccion_destino(txtDireccionDestino.getText());
+                envio.setTelefono_destinatario(txtTelefonoDestinatario.getText());
+                envio.setFecha_envio(java.time.LocalDate.now());
+                envio.setPaquetes(java.util.List.of(paquete));
  
-                // CAMBIO: usamos el mediador que ademas hace geocodificacion
-                boolean exito = mediador.registrarEnvioConGeocodificacion(envioDTO);
+                boolean exito = mediador.registrarEnvioConGeocodificacion(envio);
  
                 if (exito) {
-                    JOptionPane.showMessageDialog(this, "Envio registrado con exito!\nCodigo: " + envioDTO.getCodigo_rastreo(), "Exito", JOptionPane.INFORMATION_MESSAGE);
-                    limpiarCampos();
-                    
-                    double totalCalculado = mediador.calcularCostoTotal(envioDTO);
+                    JOptionPane.showMessageDialog(this,
+                        "Envio registrado!\nCodigo: " + envio.getCodigo_rastreo(),
+                        "Exito", JOptionPane.INFORMATION_MESSAGE);
+ 
+                    double total = mediador.calcularCostoTotal(envio);
                     VentaDTO venta = new VentaDTO();
-                    venta.setMonto(totalCalculado);
-                    
+                    venta.setMonto(total);
                     new FrmVenta(venta).setVisible(true);
+ 
+                    limpiarCampos();
                     this.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo registrar el envio.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,
+                        "No se pudo registrar el envio.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
  
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Ingresa numeros validos en peso y medidas.", "Error de formato", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                    "Ingresa numeros validos en peso y medidas.",
+                    "Formato invalido", JOptionPane.WARNING_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }

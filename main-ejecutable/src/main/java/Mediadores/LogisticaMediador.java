@@ -129,8 +129,8 @@ public class LogisticaMediador {
  
     // --- CLIENTES ---
  
-    public ClienteDTO buscarCliente(String id) {
-        return clienteControlador.buscarPorId(id);
+public ClienteDTO buscarClientePorTelefono(String telefono) {
+        return clienteControlador.buscarPorTelefono(telefono);
     }
  
     public boolean darDeAltaCliente(ClienteDTO cliente) {
