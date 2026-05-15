@@ -14,6 +14,8 @@ public class RegistroEnvioDTO {
     private String id_registro;
     private LocalDateTime fecha;
     private String direccion;
+    private String latitud;
+    private String longitud;
 
     public RegistroEnvioDTO() {
     }
@@ -46,6 +48,22 @@ public class RegistroEnvioDTO {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public String getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(String latitud) {
+        this.latitud = latitud;
+    }
+
+    public String getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(String longitud) {
+        this.longitud = longitud;
     }
     
     

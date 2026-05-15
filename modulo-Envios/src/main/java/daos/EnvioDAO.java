@@ -132,6 +132,22 @@ public class EnvioDAO implements IEnvioDAO{
             return null;
         }
     }
+    
+    @Override
+    public Envio rastrearPaquete(String codigo) {
+        try {
+            // Buscamos el documento donde el campo "codigo_rastreo" coincida
+            Document doc = coleccionEnvios.find(eq("codigo_rastreo", codigo)).first();
+            
+            if (doc != null) {
+                // Usamos el Mapper para convertir el Documento de Mongo a nuestra Entidad
+                return EnvioMapper.fromDocumentToEntity(doc);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar envío por código: " + e.getMessage());
+        }
+        return null;
+    }
 
     @Override
     public List<Envio> obtenerHistCliente(String id_Cliente) {
@@ -141,5 +157,31 @@ public class EnvioDAO implements IEnvioDAO{
             historial.add(EnvioMapper.fromDocumentToEntity(doc)); 
         }
         return historial;
+    }
+    
+    @Override
+    public boolean agregarHitoHistorial(String idEnvio, RegistroEnvioDTO movimiento) {
+        try {
+            // 1. Creamos el documento del histo
+            // Convertimos los datos del DTO a un Documento de MongoDB
+            Document docHito = new Document()
+                    .append("fecha", new java.util.Date()) // Fecha actual
+                    .append("ubicacion", movimiento.getUbicacion())
+                    .append("descripcion", movimiento.getDescripcion())
+                    .append("latitud", movimiento.getLatitud())  // Se guarda como String según tu DTO
+                    .append("longitud", movimiento.getLongitud());
+
+            // 2. Usamos updateOne con $push para insertar en el arreglo "historial"
+            // Buscamos por el ID interno de MongoDB
+            coleccion.updateOne(
+                eq("_id", new ObjectId(idEnvio)), 
+                new Document("$push", new Document("historial", docHito))
+            );
+
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error al actualizar historial en BD: " + e.getMessage());
+            return false;
+        }
     }
 }

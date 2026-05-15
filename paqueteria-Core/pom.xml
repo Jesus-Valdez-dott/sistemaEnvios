@@ -8,8 +8,16 @@
     </parent>
     <artifactId>paqueteria-Core</artifactId>
     <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+    </dependencies>
     <properties>
         <maven.compiler.release>23</maven.compiler.release>
         <exec.mainClass>com.mycompany.paqueteria.core.PaqueteriaCore</exec.mainClass>
     </properties>
+    
 </project>

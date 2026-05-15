@@ -8,6 +8,7 @@ import Enums.EstadoEnvio;
 import daos.EnvioDAO;
 import daos.IEnvioDAO;
 import dtos.EnvioDTO;
+import dtos.RegistroEnvioDTO;
 import entidades.Envio;
 import java.util.UUID;
 import java.util.List;
@@ -92,5 +93,27 @@ public class EnvioControlador {
         return listaEntidades.stream()
                 .map(EnvioMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+    
+    public EnvioDTO obtenerSeguimientoCompleto(String codigo) {
+        // 1. Buscamos el envío en la base de datos
+        Envio envio = envioDAO.rastrearPaquete(codigo);
+
+        if (envio == null) return null;
+
+        // 2. Convertimos a DTO usando el Mapper
+        EnvioDTO dto = EnvioMapper.toDTO(envio);
+
+        // 3. Ordenamos el historial por fecha (del más reciente al más antiguo)
+        if (dto.getHistorial_envio()!= null) {
+            dto.getHistorial_envio().sort((r1, r2) -> r2.getFecha().compareTo(r1.getFecha()));
+        }
+        return dto;
+    }
+    
+    public boolean actualizarHistorial(String idEnvio, RegistroEnvioDTO movimiento) {
+        // 1. Convertimos el DTO de movimiento a Entidad si es necesario 
+        // o lo pasamos directamente al DAO
+        return envioDAO.agregarHitoHistorial(idEnvio, movimiento);
     }
 }

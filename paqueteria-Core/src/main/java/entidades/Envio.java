@@ -22,6 +22,8 @@ public class Envio {
     private List<RegistroEnvio> historial_envio;
     private String nombre_destinatario;
     private String direccion_destino;
+    private String latitud_destino;
+    private String longitud_destino;
     private String telefono_destinatario;
     private LocalDate fecha_entrega;
     private String id_empleado_entrega;
@@ -121,5 +123,20 @@ public class Envio {
     public void setId_cliente(String id_cliente) {
         this.id_cliente = id_cliente;
     }
-    
+
+    public String getLatitud_destino() {
+        return latitud_destino;
+    }
+
+    public void setLatitud_destino(String latitud_destino) {
+        this.latitud_destino = latitud_destino;
+    }
+
+    public String getLongitud_destino() {
+        return longitud_destino;
+    }
+
+    public void setLongitud_destino(String longitud_destino) {
+        this.longitud_destino = longitud_destino;
+    }
 }

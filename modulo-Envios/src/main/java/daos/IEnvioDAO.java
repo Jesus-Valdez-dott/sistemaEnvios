@@ -17,4 +17,6 @@ public interface IEnvioDAO {
     List<Envio> obtenerHistCliente(String id_Cliente);
     boolean actualizarEdo(String id_Envio, EstadoEnvio edo);
     Envio obtenerDetalles(String id_Envio);
+    Envio rastrearPaquete(String codigo_rastreo);
+    boolean agregarHitoHistorial(String idEnvio, RegistroEnvioDTO movimiento);
 }

@@ -6,8 +6,15 @@ package Mediadores;
 
 import controladores.ClienteControlador;
 import controladores.EnvioControlador;
+import controladores.VentaControlador;
+import controlador.SucursalControlador;
+import apiMapa.NominatimService;
 import dto.ClienteDTO;
+import dto.VentaDTO;
+import dto.EmpleadoDTO;
+import dto.SucursalDTO;
 import dtos.EnvioDTO;
+import dtos.RegistroEnvioDTO;
 import java.util.List;
 
 /**
@@ -15,46 +22,78 @@ import java.util.List;
  * @author Jesús
  */
 public class LogisticaMediador {
-    private final ClienteControlador clienteCtrl;
-    private final EnvioControlador envioCtrl;
+    private final VentaControlador ventaControlador;
+    private final EnvioControlador envioControlador;
+    private final ClienteControlador clienteControlador;
+    private final SucursalControlador sucursalControlador;
+    private final NominatimService mapaService;
 
     public LogisticaMediador() {
-        // El mediador conoce a ambos coordinadores
-        this.clienteCtrl = new ClienteControlador();
-        this.envioCtrl = new EnvioControlador();
+        this.ventaControlador = new VentaControlador();
+        this.envioControlador = new EnvioControlador();
+        this.clienteControlador = new ClienteControlador();
+        this.sucursalControlador = new SucursalControlador();
+        this.mapaService = new NominatimService();
+    }
+
+    // --- SECCIÓN: VENTAS Y PAGOS ---
+    
+    public boolean procesarVentaFinal(VentaDTO<?> venta) {
+        // Llama al controlador que ya tiene integrado Stripe
+        return ventaControlador.procesarVenta(venta);
+    }
+
+    // --- SECCIÓN: ENVÍOS Y LOGÍSTICA ---
+
+    public boolean registrarEnvioConGeocodificacion(EnvioDTO envio) {
+        // 1. Usamos el servicio de mapas para obtener coordenadas del destino
+        double[] coords = mapaService.obtenerCoordenadas(envio.getDireccion_destino());
+        envio.setLatitud_destino(String.valueOf(coords[0]));
+        envio.setLongitud_destino(String.valueOf(coords[1]));
+
+        // 2. Guardamos el envío a través del controlador
+        return envioControlador.guardarEnvio(envio);
     }
 
     /**
-     * Este método resuelve tu problema: junta los dos mundos 
-     * sin que los módulos se peleen entre sí.
+     * Registra un nuevo hito en el historial del paquete (ej. llegada a sucursal)
      */
-    public ClienteDTO obtenerClienteConSusEnvios(String idCliente) {
-        //Se piden los datos básicos al módulo de Clientes
-        ClienteDTO cliente = clienteCtrl.buscarPorId(idCliente);
-        
-        if (cliente != null) {
-            // 2. Pedimos la lista de envíos al módulo de Envíos
-            List<EnvioDTO> envios = envioCtrl.obtenerEnviosPorCliente(idCliente);
-            
-            // 3. Los inyectamos en el DTO de cliente
-            cliente.setListaEnvios(envios);
-        }
-        
-        return cliente;
+    public boolean registrarMovimiento(String idEnvio, RegistroEnvioDTO movimiento) {
+        // Si el movimiento viene de una sucursal, podríamos jalar las coordenadas de la sucursal aquí
+        return envioControlador.actualizarHistorial(idEnvio, movimiento);
     }
 
-    /**
-     * Ejemplo de proceso complejo: Registrar una venta que implica 
-     * crear un cliente (si es nuevo) y sus envíos.
-     */
-    public void registrarOperacionCompleta(ClienteDTO clienteDTO, List<EnvioDTO> nuevosEnvios) {
-        // 1. Registrar cliente mediante su propio experto
-        clienteCtrl.registrarCliente(clienteDTO);
-        
-        // 2. Registrar cada envío mediante su propio experto
-        for (EnvioDTO envio : nuevosEnvios) {
-//            envio.setId_Cliente(clienteDTO.getId_Cliente()); // Vinculamos
-            envioCtrl.guardarEnvio(envio);
+    // --- SECCIÓN: RASTREO (API + HISTORIAL) ---
+
+    public void ejecutarRastreoCompleto(String codigo) {
+        EnvioDTO envio = envioControlador.obtenerSeguimientoCompleto(codigo);
+
+        if (envio != null && envio.getHistorial_envio()!= null && !envio.getHistorial_envio().isEmpty()) {
+            // Obtenemos el punto más reciente
+            RegistroEnvioDTO actual = envio.getHistorial_envio().get(0); 
+
+            // Pasamos los Strings al servicio de mapas
+            mapaService.abrirMapaEnNavegador(actual.getLatitud(), actual.getLongitud());
         }
+    }
+
+    // --- SECCIÓN: SUCURSALES Y EMPLEADOS ---
+
+    public List<SucursalDTO> obtenerCatalogoSucursales() {
+        return sucursalControlador.obtenerSucursales();
+    }
+
+    public boolean vincularEmpleadoASucursal(String idSucursal, EmpleadoDTO empleado) {
+        return sucursalControlador.insertarEmpleado(idSucursal, empleado);
+    }
+
+    // --- SECCIÓN: CLIENTES ---
+
+    public ClienteDTO buscarCliente(String id) {
+        return clienteControlador.buscarPorId(id);
+    }
+
+    public boolean darDeAltaCliente(ClienteDTO cliente) {
+        return clienteControlador.registrarCliente(cliente);
     }
 }
