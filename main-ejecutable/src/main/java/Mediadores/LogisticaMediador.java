@@ -64,27 +64,17 @@ public class LogisticaMediador {
         return envioControlador.actualizarHistorial(idEnvio, movimiento);
     }
     
-    public double calcularCostoTotal(EnvioDTO envio) {
-        double tarifaBase = 150.00;
-        double precioPorKg = 25.50;
-        double costoTotal = 0;
- 
-        if (envio.getPaquetes() == null || envio.getPaquetes().isEmpty()) {
-            return tarifaBase;
-        }
- 
-        for (PaqueteDTO p : envio.getPaquetes()) {
-            // 1. Calculamos peso volumétrico
-            double pesoVolumetrico = (p.getLargo() * p.getAncho() * p.getAlto()) / 5000;
- 
-            // 2. Tomamos el mayor entre el real y el volumétrico
-            double pesoACobrar = Math.max(p.getPeso(), pesoVolumetrico);
- 
-            // 3. Sumamos al total del envío
-            costoTotal += tarifaBase + (pesoACobrar * precioPorKg);
-        }
- 
-        return costoTotal;
+    /**
+     * Calcula el costo del envio basado en el peso total de los paquetes.
+     * Regla simple: $20 MXN por kg, minimo $50 MXN.
+     */
+    public double calcularCostoTotal(dtos.EnvioDTO envio) {
+        if (envio.getPaquetes() == null || envio.getPaquetes().isEmpty()) return 50.0;
+        double pesoTotal = envio.getPaquetes().stream()
+                .mapToDouble(p -> p.getPeso())
+                .sum();
+        double costo = pesoTotal * 20.0;
+        return Math.max(costo, 50.0);
     }
     
     public List<EnvioDTO> consultarEnviosPorCliente(String id) {
@@ -140,4 +130,6 @@ public ClienteDTO buscarClientePorTelefono(String telefono) {
     public List<ClienteDTO> obtenerTodosLosClientes() {
         return clienteControlador.obtenerTodos();
     }
+    
+    
 }

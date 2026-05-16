@@ -11,7 +11,6 @@
 package gui;
  
 import com.formdev.flatlaf.FlatClientProperties;
-import dto.VentaDTO;
 import dtos.EnvioDTO;
 import dtos.PaqueteDTO;
 import Mediadores.LogisticaMediador;
@@ -309,15 +308,14 @@ public class FrmRegistroEnvio extends JFrame {
                 boolean exito = mediador.registrarEnvioConGeocodificacion(envio);
  
                 if (exito) {
-                    JOptionPane.showMessageDialog(this,
-                        "Envio registrado!\nCodigo: " + envio.getCodigo_rastreo(),
-                        "Exito", JOptionPane.INFORMATION_MESSAGE);
- 
+                    // Armar el DTO de venta con el monto calculado y el id del envio
                     double total = mediador.calcularCostoTotal(envio);
-                    VentaDTO venta = new VentaDTO();
+                    dto.VentaDTO venta = new dto.VentaDTO();
                     venta.setMonto(total);
-                    new FrmVenta(venta).setVisible(true);
+                    venta.setEnvios(java.util.List.of(envio.getCodigo_rastreo()));
  
+                    // Abrir pantalla de pago pasando el mediador compartido
+                    new FrmVenta(venta, mediador).setVisible(true);
                     limpiarCampos();
                     this.dispose();
                 } else {
